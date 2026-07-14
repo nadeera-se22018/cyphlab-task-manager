@@ -88,11 +88,10 @@ export default function UsersPage() {
                     {user.email}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${
-                      user.role === 'ADMIN' ? 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10' :
-                      user.role === 'MANAGER' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' :
-                      'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20'
-                    }`}>
+                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${user.role === 'ADMIN' ? 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10' :
+                        user.role === 'MANAGER' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' :
+                          'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20'
+                      }`}>
                       {user.role}
                     </span>
                   </td>
