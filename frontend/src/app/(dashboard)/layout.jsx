@@ -1,22 +1,29 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
 
+const subscribe = () => () => {};
+const getSnapshot = () => Cookies.get('token') || '';
+const getServerSnapshot = () => null;
+
 export default function DashboardLayout({ children }) {
   const router = useRouter();
-  const token = Cookies.get('token');
+  const token = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   useEffect(() => {
+    if (token === null) {
+      return;
+    }
     if (!token) {
       router.replace('/login');
     }
   }, [token, router]);
 
-  if (!token) {
+  if (token === null || !token) {
     return null;
   }
 
