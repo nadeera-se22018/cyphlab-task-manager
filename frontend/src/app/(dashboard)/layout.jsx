@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Sidebar from '../../components/Sidebar';
@@ -8,18 +8,15 @@ import Navbar from '../../components/Navbar';
 
 export default function DashboardLayout({ children }) {
   const router = useRouter();
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const token = Cookies.get('token');
 
   useEffect(() => {
-    const token = Cookies.get('token');
     if (!token) {
-      router.push('/login');
-    } else {
-      setIsAuthenticated(true);
+      router.replace('/login');
     }
-  }, [router]);
+  }, [token, router]);
 
-  if (!isAuthenticated) {
+  if (!token) {
     return null;
   }
 
