@@ -15,21 +15,31 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const [projectsRes, tasksRes] = await Promise.all([
-          api.get('/projects'),
-          api.get('/tasks/project/1').catch(() => ({ data: [] })),
-        ]);
-        const projectCount = projectsRes.data?.length || 0;
+        const projectsRes = await api.get('/projects');
+        const projectsList = projectsRes.data || [];
+        const projectCount = projectsList.length;
+
+        const tasksPromises = projectsList.map((p) =>
+          api.get(`/tasks/project/${p.id}`).catch(() => ({ data: [] }))
+        );
+        const tasksResponses = await Promise.all(tasksPromises);
+        const allTasks = tasksResponses.flatMap((res) => res.data || []);
+
+        const activeCount = allTasks.filter(
+          (t) => t.status === 'IN_PROGRESS' || t.status === 'TODO'
+        ).length;
+        const completedCount = allTasks.filter((t) => t.status === 'DONE').length;
+
         setStats({
           projects: projectCount,
-          activeTasks: 12,
-          completedTasks: 25,
+          activeTasks: activeCount,
+          completedTasks: completedCount,
         });
       } catch (err) {
         setStats({
-          projects: 3,
-          activeTasks: 8,
-          completedTasks: 14,
+          projects: 0,
+          activeTasks: 0,
+          completedTasks: 0,
         });
       } finally {
         setLoading(false);
