@@ -1,12 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { Pool } = require('pg');
-const { PrismaPg } = require('@prisma/adapter-pg');
-const { PrismaClient } = require('../generated/prisma');
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const prisma = require('../config/prisma');
 
 const register = async (req, res) => {
   try {
@@ -37,6 +31,7 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('Registration error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -71,6 +66,7 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error('Login error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };

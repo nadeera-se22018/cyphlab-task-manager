@@ -1,10 +1,4 @@
-const { Pool } = require('pg');
-const { PrismaPg } = require('@prisma/adapter-pg');
-const { PrismaClient } = require('../generated/prisma');
-
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const adapter = new PrismaPg(pool);
-const prisma = new PrismaClient({ adapter });
+const prisma = require('../config/prisma');
 
 const createTask = async (req, res) => {
   try {
@@ -41,6 +35,7 @@ const createTask = async (req, res) => {
     });
     return res.status(201).json(task);
   } catch (error) {
+    console.error('createTask error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -70,6 +65,7 @@ const getTasksByProject = async (req, res) => {
     });
     return res.status(200).json(tasks);
   } catch (error) {
+    console.error('getTasksByProject error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -107,6 +103,7 @@ const updateTaskStatus = async (req, res) => {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Task not found' });
     }
+    console.error('updateTaskStatus error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -123,6 +120,7 @@ const deleteTask = async (req, res) => {
     if (error.code === 'P2025') {
       return res.status(404).json({ error: 'Task not found' });
     }
+    console.error('deleteTask error:', error);
     return res.status(500).json({ error: 'Internal server error' });
   }
 };
