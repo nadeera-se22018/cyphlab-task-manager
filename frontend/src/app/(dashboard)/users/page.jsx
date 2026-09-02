@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
+import { Users, Shield, Trash2, Sparkles, UserCheck } from 'lucide-react';
 import api from '../../../lib/axios';
 
 const getUserRoleFromToken = () => {
@@ -74,82 +75,116 @@ export default function UsersPage() {
   const isAdmin = currentRole === 'ADMIN';
 
   if (loading) {
-    return <div className="text-center py-10 text-gray-600">Loading users...</div>;
-  }
-
-  if (error) {
     return (
-      <div className="max-w-6xl mx-auto">
-        <div className="rounded-lg bg-red-50 border border-red-200 p-6 text-center text-red-700 font-medium">
-          {error}
+      <div className="flex items-center justify-center py-20">
+        <div className="text-amber-400 font-semibold tracking-wide flex items-center gap-3">
+          <Sparkles className="h-5 w-5 animate-spin" />
+          <span>Loading Team Directory...</span>
         </div>
       </div>
     );
   }
 
+  if (error) {
+    return (
+      <div className="rounded-xl bg-red-950/40 border border-red-500/30 p-6 text-center text-red-300 font-medium">
+        {error}
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-8 animate-fadeIn">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-500 text-sm mt-1">View and manage team members and system roles</p>
+          <h1 className="text-3xl font-extrabold tracking-tight text-white">
+            User <span className="gold-gradient-text">Management</span>
+          </h1>
+          <p className="text-slate-400 text-sm mt-1">
+            Maintain access privileges, member directories, and security roles.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-900 border border-amber-500/20 text-xs font-semibold text-amber-300">
+          <Users className="h-4 w-4 text-amber-400" />
+          <span>{users.length} Registered Accounts</span>
         </div>
       </div>
-      <div className="overflow-hidden bg-white shadow sm:rounded-lg border border-gray-200">
+
+      {/* Users Table Container */}
+      <div className="glass-card rounded-2xl border border-amber-500/20 overflow-hidden shadow-2xl">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className="min-w-full divide-y divide-slate-800">
+            <thead className="bg-slate-900/90 border-b border-amber-500/15">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  Member
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
                   Email
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Role
+                <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-slate-300 uppercase tracking-wider">
+                  System Role
                 </th>
                 {isAdmin && (
-                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
+                  <th scope="col" className="px-6 py-4 text-left text-xs font-bold text-amber-300 uppercase tracking-wider">
+                    Admin Controls
                   </th>
                 )}
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-slate-800/60 bg-transparent">
               {users.map((user) => (
-                <tr key={user.id}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {user.name}
+                <tr key={user.id} className="hover:bg-slate-800/30 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-400/20 via-yellow-500/10 to-transparent border border-amber-500/30 flex items-center justify-center font-bold text-amber-300 text-sm">
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <div>
+                        <div className="text-sm font-bold text-white">{user.name}</div>
+                        <div className="text-[11px] text-slate-500 font-mono">ID #{user.id}</div>
+                      </div>
+                    </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400 font-mono">
                     {user.email}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <span className={`inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ${user.role === 'ADMIN' ? 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/10' :
-                        user.role === 'MANAGER' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' :
-                          'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20'
-                      }`}>
-                      {user.role}
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span
+                      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase ${
+                        user.role === 'ADMIN'
+                          ? 'bg-gradient-to-r from-amber-500/20 to-yellow-500/20 text-amber-300 border border-amber-400/40 shadow-[0_0_10px_rgba(245,158,11,0.15)]'
+                          : user.role === 'MANAGER'
+                          ? 'bg-slate-800 text-slate-200 border border-slate-600'
+                          : 'bg-slate-900 text-slate-400 border border-slate-700/50'
+                      }`}
+                    >
+                      {user.role === 'ADMIN' && <Shield className="h-3 w-3 text-amber-400" />}
+                      {user.role === 'MANAGER' && <UserCheck className="h-3 w-3 text-slate-300" />}
+                      <span>{user.role}</span>
                     </span>
                   </td>
                   {isAdmin && (
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-4">
-                      <select
-                        value={user.role}
-                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                        className="rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                      >
-                        <option value="ADMIN">ADMIN</option>
-                        <option value="MANAGER">MANAGER</option>
-                        <option value="MEMBER">MEMBER</option>
-                      </select>
-                      <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 transition-colors"
-                      >
-                        Delete
-                      </button>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-400">
+                      <div className="flex items-center gap-3">
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          className="rounded-xl border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-200 focus:border-amber-400 focus:outline-none focus:ring-1 focus:ring-amber-400/40"
+                        >
+                          <option value="ADMIN">ADMIN</option>
+                          <option value="MANAGER">MANAGER</option>
+                          <option value="MEMBER">MEMBER</option>
+                        </select>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-950/40 border border-transparent hover:border-red-500/30 transition-all"
+                          title="Delete User"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
                     </td>
                   )}
                 </tr>
