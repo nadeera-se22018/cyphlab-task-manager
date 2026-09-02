@@ -5,11 +5,10 @@ const { getAllUsers, getUserById, updateUserRole, deleteUser } = require('../con
 const router = express.Router();
 
 router.use(verifyToken);
-router.use(authorizeRoles('ADMIN'));
 
 router.get('/', getAllUsers);
 router.get('/:id', getUserById);
-router.put('/:id/role', updateUserRole);
-router.delete('/:id', deleteUser);
+router.put('/:id/role', authorizeRoles('ADMIN'), updateUserRole);
+router.delete('/:id', authorizeRoles('ADMIN'), deleteUser);
 
 module.exports = router;

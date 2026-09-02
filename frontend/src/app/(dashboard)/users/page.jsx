@@ -1,14 +1,37 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
 import api from '../../../lib/axios';
+
+const getUserRoleFromToken = () => {
+  try {
+    const token = Cookies.get('token');
+    if (!token) return null;
+    const base64Url = token.split('.')[1];
+    if (!base64Url) return null;
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload)?.role || null;
+  } catch {
+    return null;
+  }
+};
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [currentRole, setCurrentRole] = useState(null);
 
   useEffect(() => {
+    setCurrentRole(getUserRoleFromToken());
+
     const fetchUsers = async () => {
       try {
         const response = await api.get('/users');
@@ -48,17 +71,30 @@ export default function UsersPage() {
     }
   };
 
+  const isAdmin = currentRole === 'ADMIN';
+
   if (loading) {
     return <div className="text-center py-10 text-gray-600">Loading users...</div>;
   }
 
   if (error) {
-    return <div className="text-center py-10 text-red-600">{error}</div>;
+    return (
+      <div className="max-w-6xl mx-auto">
+        <div className="rounded-lg bg-red-50 border border-red-200 p-6 text-center text-red-700 font-medium">
+          {error}
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">User Management</h1>
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
+          <p className="text-gray-500 text-sm mt-1">View and manage team members and system roles</p>
+        </div>
+      </div>
       <div className="overflow-hidden bg-white shadow sm:rounded-lg border border-gray-200">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
@@ -73,9 +109,11 @@ export default function UsersPage() {
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Role
                 </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
+                {isAdmin && (
+                  <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
@@ -95,23 +133,25 @@ export default function UsersPage() {
                       {user.role}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                      className="rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
-                    >
-                      <option value="ADMIN">ADMIN</option>
-                      <option value="MANAGER">MANAGER</option>
-                      <option value="MEMBER">MEMBER</option>
-                    </select>
-                    <button
-                      onClick={() => handleDeleteUser(user.id)}
-                      className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </td>
+                  {isAdmin && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center gap-4">
+                      <select
+                        value={user.role}
+                        onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                        className="rounded-md border border-gray-300 px-2 py-1 text-sm text-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-indigo-500"
+                      >
+                        <option value="ADMIN">ADMIN</option>
+                        <option value="MANAGER">MANAGER</option>
+                        <option value="MEMBER">MEMBER</option>
+                      </select>
+                      <button
+                        onClick={() => handleDeleteUser(user.id)}
+                        className="rounded bg-red-600 px-3 py-1 text-white hover:bg-red-700 transition-colors"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
