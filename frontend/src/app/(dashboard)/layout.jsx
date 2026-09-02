@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import Sidebar from '../../components/Sidebar';
 import Navbar from '../../components/Navbar';
+import Footer from '../../components/Footer';
 
 const subscribe = () => () => {};
 const getSnapshot = () => Cookies.get('token') || '';
@@ -37,6 +38,7 @@ export default function DashboardLayout({ children }) {
       <div className="flex-1 flex flex-col min-h-screen relative z-10">
         <Navbar />
         <main className="flex-1 p-6 md:p-8 max-w-7xl w-full mx-auto">{children}</main>
+        <Footer />
       </div>
     </div>
   );

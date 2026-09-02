@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 import { Sparkles, Lock, Mail, User, Shield, ArrowRight } from 'lucide-react';
 import api from '../../lib/axios';
+import Footer from '../../components/Footer';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -43,12 +44,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#080A0F] px-4 py-12 relative overflow-hidden">
+    <div className="flex min-h-screen flex-col items-center justify-between bg-[#080A0F] px-4 py-8 relative overflow-hidden">
       {/* Ambient background glows */}
       <div className="fixed top-1/4 left-1/3 w-[32rem] h-[32rem] bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="fixed bottom-1/4 right-1/3 w-[30rem] h-[30rem] bg-slate-400/5 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="w-full max-w-md relative z-10">
+      <div className="w-full" />
+
+      <div className="w-full max-w-md relative z-10 my-auto">
         {/* Brand Emblem */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-amber-400 via-yellow-500 to-amber-700 flex items-center justify-center shadow-xl shadow-amber-500/25 ring-1 ring-amber-300/40 mb-4">
@@ -199,6 +202,10 @@ export default function LoginPage() {
             </div>
           </form>
         </div>
+      </div>
+
+      <div className="w-full max-w-md relative z-10 pt-6">
+        <Footer />
       </div>
     </div>
   );
